@@ -5,7 +5,7 @@ import Search from "./Search";
 import API from "../utils/API";
 
 export default function UserTable() {
-  const [list, setList] = useState();
+  const [sort, setSort] = useState(null);
   const [users, setUsers] = useState([]);
   const [search, setSearch] = useState("");
 
@@ -21,23 +21,24 @@ export default function UserTable() {
     API.getUsers()
       .then((users) => {
         setUsers(users.data.results);
-        console.log(users);
       })
       .catch((err) => console.log(err));
   }
 
   function sortUsers() {
     let sortedUsers = [...users];
-    sortedUsers.sort((a, b) => {
-      console.log(list)
-      if (list !== null) {
-      if (a[users.list] < b[users.list]) {
-        return users.direction === 'ascending' ? -1 : 1;
-      }
-      if (a[users.list] > b[users.list]) {
-        return users.direction === 'ascending' ? 1 : -1;      }
-      return 0;
-    }});
+    if (sort !== null) {
+      sortedUsers.sort((a, b) => {
+        if (a[sort] < b[sort]) {
+          return -1;
+        }
+        if (a[sort] > b[sort]) {
+          return 1;
+        }
+        return 0;
+      });
+    }
+    console.log(sortedUsers);
   }
 
   return (
@@ -51,7 +52,7 @@ export default function UserTable() {
               <Button
                 className="btn btn-primary"
                 type="Button"
-                onClick={() => setList("name.last")}
+                onClick={() => setSort("name.last")}
               >
                 Last
               </Button>
@@ -60,7 +61,7 @@ export default function UserTable() {
               <Button
                 className="btn btn-primary"
                 type="button"
-                onClick={() => setList("name.first")}
+                onClick={() => setSort("name.first")}
               >
                 First
               </Button>
@@ -69,7 +70,7 @@ export default function UserTable() {
               <Button
                 className="btn btn-primary"
                 type="button"
-                onClick={() => setList("id.value")}
+                onClick={() => setSort("id.value")}
               >
                 User ID
               </Button>
@@ -78,7 +79,7 @@ export default function UserTable() {
               <Button
                 className="btn btn-primary"
                 type="button"
-                onClick={() => setList("location")}
+                onClick={() => setSort("location.city")}
               >
                 Location
               </Button>
@@ -87,7 +88,7 @@ export default function UserTable() {
               <Button
                 className="btn btn-primary"
                 type="button"
-                onClick={() => setList("email")}
+                onClick={() => setSort("email")}
               >
                 Email
               </Button>
@@ -96,7 +97,7 @@ export default function UserTable() {
               <Button
                 className="btn btn-primary"
                 type="button"
-                onClick={() => setList("phone")}
+                onClick={() => setSort("phone")}
               >
                 Phone Number
               </Button>
@@ -110,18 +111,20 @@ export default function UserTable() {
                 return line;
               }
             })
-            .map((user) => {
+            .map((sortedUser) => {
               return (
-                <tr key={user.id.value}>
+                <tr key={sortedUser.id.value}>
                   <td>
-                    <img src={user.picture.thumbnail} alt="Profile" />
+                    <img src={sortedUser.picture.thumbnail} alt="Profile" />
                   </td>
-                  <td>{user.name.last}</td>
-                  <td>{user.name.first}</td>
-                  <td>{user.id.value}</td>
-                  <td>{user.location.city}, {user.location.state}</td>
-                  <td>{user.email}</td>
-                  <td>{user.phone}</td>
+                  <td>{sortedUser.name.last}</td>
+                  <td>{sortedUser.name.first}</td>
+                  <td>{sortedUser.id.value}</td>
+                  <td>
+                    {sortedUser.location.city}, {sortedUser.location.state}
+                  </td>
+                  <td>{sortedUser.email}</td>
+                  <td>{sortedUser.phone}</td>
                 </tr>
               );
             })}
